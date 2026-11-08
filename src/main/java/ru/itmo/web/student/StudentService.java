@@ -1,0 +1,169 @@
+package ru.itmo.web.student;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class StudentService {
+    private static final Logger log=LoggerFactory.getLogger(StudentService.class);
+    private final StudentRepository repository;
+    public StudentService(StudentRepository repository) {
+        this.repository = repository;
+    }
+
+    @Transactional(readOnly=true)
+    public List<StudentResponseDto> getAll() {
+        return repository.findAll().stream()
+                .map(StudentResponseDto::from)
+                .toList();
+    }
+    @Transactional(readOnly=true)
+    public StudentResponseDto getById(Long id) {
+        return StudentResponseDto.from(findStudent(id));
+    }
+    @Transactional
+    public StudentResponseDto create(StudentRequestDto dto) {
+        checkUniqueIsu(dto.isuId(), null);
+        Student student=new Student();
+        copyFields(dto, student);
+        Student saved=repository.saveAndFlush(student);
+        log.info("Создан студент id={}, isuId={}", saved.getId(), saved.getIsuId());
+        return StudentResponseDto.from(saved);
+    }
+    @Transactional
+    public StudentResponseDto update(Long id, StudentRequestDto dto) {
+        Student student=findStudent(id);
+        if (!student.getIsuId().equals(dto.isuId())) {
+            throw new IllegalArgumentException("ИСУ ID является идентификатором и не может быть изменён");
+        }
+        checkUniqueIsu(dto.isuId(), id);
+        copyFields(dto, student);
+        Student saved = repository.save(student);
+        log.info("Обновлён студент id={}", id);
+        return StudentResponseDto.from(saved);
+    }
+    @Transactional
+    public StudentResponseDto patch(Long id, StudentPatchRequestDto dto) {
+        Student student = findStudent(id);
+        if (dto.fullName() != null)    student.setFullName(dto.fullName().trim());
+        if (dto.groupName() != null)   student.setGroupName(dto.groupName().trim());
+        if (dto.dormNumber() != null)  student.setDormNumber(dto.dormNumber());
+        if (dto.room() != null)        student.setRoom(dto.room());
+        if (dto.moveInDate() != null)  student.setMoveInDate(dto.moveInDate());
+        if (dto.isForeigner() != null) student.setForeigner(dto.isForeigner());
+        if (dto.notes() != null)       student.setNotes(dto.notes());
+        Student saved = repository.save(student);
+        log.info("Частично обновлён студент id={}", id);
+        return StudentResponseDto.from(saved);
+    }
+    @Transactional
+    public void delete(Long id) {
+        Student student = findStudent(id);
+        repository.delete(student);
+        log.info("Удалён студент id={}", id);
+    }
+    @Transactional(readOnly = true)
+    public Page<StudentResponseDto> search(
+            String fullName,
+            String groupName,
+            String isuId,
+            Integer dormNumber,
+            String room,
+            LocalDate moveInDate,
+            Boolean isForeigner,
+            int page,
+            int size,
+            String sortBy,
+            String direction
+    ) {
+        return search(fullName, groupName, isuId, dormNumber, room, moveInDate,
+                isForeigner, page, size, sortBy, direction, null);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<StudentResponseDto> search(
+            String fullName, String groupName, String isuId, Integer dormNumber,
+            String room, LocalDate moveInDate, Boolean isForeigner,
+            int page, int size, String sortBy, String direction, String notes
+    ) {
+        Integer isu = positiveNumber(isuId, "ИСУ ID");
+        Integer roomNumber = positiveNumber(room, "Комната");
+        if (dormNumber != null && dormNumber <= 0) {
+            throw new IllegalArgumentException("Номер общежития должен быть положительным");
+        }
+        List<String> allowed = List.of(
+                "id", "fullName", "groupName", "isuId",
+                "dormNumber", "room", "moveInDate", "isForeigner", "notes"
+        );
+        if (!allowed.contains(sortBy)) {
+            throw new IllegalArgumentException("Недопустимое поле сортировки: " + sortBy);
+        }
+        if (page < 0 || size < 1 || size > 100) {
+            throw new IllegalArgumentException("Некорректные параметры пагинации");
+        }
+        if (!"asc".equalsIgnoreCase(direction) && !"desc".equalsIgnoreCase(direction)) {
+            throw new IllegalArgumentException("Направление сортировки: asc или desc");
+        }
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+        PageRequest pageable = PageRequest.of(page, size, Sort.by(sortDirection, sortBy)
+                .and(Sort.by("id")));
+        return repository.findAll(
+                StudentSpecifications.withFilters(
+                        emptyToNull(fullName),
+                        emptyToNull(groupName),
+                        isu,
+                        dormNumber,
+                        roomNumber,
+                        moveInDate,
+                        isForeigner,
+                        emptyToNull(notes)
+                ),
+                pageable
+        ).map(StudentResponseDto::from);
+    }
+    private Student findStudent(Long id) {
+        Optional<Student> found = repository.findById(id);
+        if (found.isEmpty()) {
+            log.warn("Студент id={} не найден", id);
+            throw new StudentNotFoundException(id);
+        }
+        return found.get();
+    }
+    private void copyFields(StudentRequestDto dto, Student student) {
+        student.setFullName(dto.fullName().trim());
+        student.setGroupName(dto.groupName().trim());
+        student.setIsuId(dto.isuId());
+        student.setDormNumber(dto.dormNumber());
+        student.setRoom(dto.room());
+        student.setMoveInDate(dto.moveInDate());
+        student.setForeigner(dto.isForeigner());
+        student.setNotes(dto.notes());
+    }
+    private void checkUniqueIsu(Integer isuId, Long currentId) {
+        Optional<Student> existing = repository.findByIsuId(isuId);
+        if (existing.isPresent() && !existing.get().getId().equals(currentId)) {
+            log.warn("Дубликат ИСУ ID: {}", isuId);
+            throw new DuplicateStudentException(isuId);
+        }
+    }
+    private Integer positiveNumber(String value, String field) {
+        if (value == null || value.isBlank()) return null;
+        try {
+            int number = Integer.parseInt(value.trim());
+            if (number > 0) return number;
+        } catch (NumberFormatException ignored) {
+            // Возвращаем понятную ошибку вместо ошибки запроса к БД.
+        }
+        throw new IllegalArgumentException(field + ": нужно положительное целое число до 2147483647");
+    }
+    private String emptyToNull(String value) {
+        return value == null || value.isBlank() ? null : value.trim();
+    }
+}
