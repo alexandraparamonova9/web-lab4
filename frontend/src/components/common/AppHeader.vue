@@ -15,7 +15,6 @@ function logout() {
       <h1>Система студентов</h1>
       <nav class="header-links" aria-label="Главное меню">
         <template v-if="auth.isAuthenticated">
-          <RouterLink to="/students" class="button button-secondary">Студенты</RouterLink>
           <RouterLink to="/profile" class="button button-secondary">Профиль</RouterLink>
           <button type="button" class="button button-secondary" @click="logout">Выйти</button>
         </template>

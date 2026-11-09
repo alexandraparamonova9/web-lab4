@@ -5,6 +5,9 @@ import NotFoundPage from '../pages/NotFoundPage.vue'
 import LoginPage from '../pages/LoginPage.vue'
 import ProfilePage from '../pages/ProfilePage.vue'
 import RegisterPage from '../pages/RegisterPage.vue'
+import StudentsPage from '../pages/StudentsPage.vue'
+import StudentFormPage from '../pages/StudentFormPage.vue'
+import StudentDetailsPage from '../pages/StudentDetailsPage.vue'
 const routes = [
     {
         path: '/',
@@ -25,12 +28,32 @@ const routes = [
         component: ProfilePage,
         meta: { requiresAuth: true }
     },
+
     {
         path: '/students',
-        component: {
-            template: '<h1>Страница студентов</h1>'
-        },
+        component: StudentsPage,
         meta: { requiresAuth: true }
+    },
+    {
+        path: '/students/new',
+        component: StudentFormPage,
+        meta: {
+            requiresAuth: true,
+            roles: ['ADMIN']
+        }
+    },
+    {
+        path: '/students/:id',
+        component: StudentDetailsPage,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/students/:id/edit',
+        component: StudentFormPage,
+        meta: {
+            requiresAuth: true,
+            roles: ['ADMIN']
+        }
     },
     {
         path: '/403',

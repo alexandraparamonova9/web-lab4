@@ -1,4 +1,3 @@
-
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -17,8 +16,6 @@ async function handleLogin(data) {
   try {
         await auth.login(data.username, data.password)
 
-    showNotification('Вход выполнен успешно')
-
     await router.push('/students')
   } catch (err) {
     error.value = err.message
@@ -29,19 +26,27 @@ async function handleLogin(data) {
 
 <template>
   <div class="auth-page">
-    <h1>Вход</h1>
 
-    <AuthForm
-        mode="login"
-        :loading="auth.loading"
-        @submit="handleLogin"
-    />
+    <div class="auth-card">
+      <h1>Вход в систему</h1>
 
-    <ErrorMessage :message="error" />
-    <AppLoader v-if="auth.loading" />
+      <AuthForm
+          mode="login"
+          :loading="auth.loading"
+          @submit="handleLogin"
+      />
 
-    <RouterLink to="/register">
-      Зарегистрироваться
-    </RouterLink>
+      <ErrorMessage :message="error" />
+      <AppLoader v-if="auth.loading" />
+
+      <div class="auth-link">
+        Нет аккаунта?
+        <RouterLink to="/register">
+          Зарегистрироваться
+        </RouterLink>
+      </div>
+
+    </div>
+
   </div>
 </template>

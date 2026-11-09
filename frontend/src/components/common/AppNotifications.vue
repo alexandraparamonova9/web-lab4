@@ -1,8 +1,6 @@
-
 <script setup>
-import { useObservable } from '../../composables/useObservable.js'
 import { notifications$ } from '../../rxjs/notifications.js'
-
+import { useObservable } from '../../rxjs/useObservable.js'
 const notification = useObservable(notifications$)
 </script>
 

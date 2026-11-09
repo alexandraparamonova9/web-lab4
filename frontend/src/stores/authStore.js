@@ -1,11 +1,15 @@
+
 import { firstValueFrom } from 'rxjs'
+import { defineStore } from 'pinia'
 import { getUserFromToken } from '../services/jwtUtils.js'
 import {
     refreshAccessToken,
     resetRefreshRequest
 } from '../rxjs/authRefresh.js'
-import { defineStore } from 'pinia'
-import { login as loginRequest, register as registerRequest } from '../services/authService.js'
+import {
+    login as loginRequest,
+    register as registerRequest
+} from '../services/authService.js'
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
@@ -29,6 +33,7 @@ export const useAuthStore = defineStore('auth', {
 
                 this.accessToken = response.accessToken
                 this.refreshToken = response.refreshToken
+                this.user = getUserFromToken(response.accessToken)
 
                 return response
             } finally {
@@ -44,12 +49,14 @@ export const useAuthStore = defineStore('auth', {
 
                 this.accessToken = response.accessToken
                 this.refreshToken = response.refreshToken
+                this.user = getUserFromToken(response.accessToken)
 
                 return response
             } finally {
                 this.loading = false
             }
         },
+
         async refresh() {
             if (!this.refreshToken) {
                 throw new Error('Нет refresh-токена')
@@ -69,10 +76,11 @@ export const useAuthStore = defineStore('auth', {
                 resetRefreshRequest()
             }
         },
+
         logout() {
-            this.accessToken = response.accessToken
-            this.refreshToken = response.refreshToken
-            this.user = getUserFromToken(response.accessToken)
+            this.accessToken = null
+            this.refreshToken = null
+            this.user = null
         }
     }
 })

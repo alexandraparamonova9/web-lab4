@@ -30,33 +30,46 @@ function handleSubmit(event) {
 </script>
 
 <template>
-  <form @submit.prevent="handleSubmit">
-    <input
-        name="username"
-        placeholder="Логин"
-        minlength="3"
-        maxlength="50"
-        required
-    />
+  <form class="auth-form" @submit.prevent="handleSubmit">
 
-    <input
-        v-if="mode === 'register'"
-        name="email"
-        type="email"
-        placeholder="Email"
-        required
-    />
+    <div class="form-group">
+      <label for="username">Логин</label>
+      <input
+          id="username"
+          name="username"
+          placeholder="Введите логин"
+          minlength="3"
+          maxlength="50"
+          required
+      />
+    </div>
 
-    <input
-        name="password"
-        type="password"
-        placeholder="Пароль"
-        :minlength="mode === 'register' ? 8 : undefined"
-        required
-    />
+    <div v-if="mode === 'register'" class="form-group">
+      <label for="email">Email</label>
+      <input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="Введите email"
+          required
+      />
+    </div>
 
-    <button type="submit" :disabled="loading">
+    <div class="form-group">
+      <label for="password">Пароль</label>
+      <input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Введите пароль"
+          :minlength="mode === 'register' ? 8 : undefined"
+          required
+      />
+    </div>
+
+    <button class="auth-button" type="submit" :disabled="loading">
       {{ loading ? 'Подождите...' : mode === 'login' ? 'Войти' : 'Зарегистрироваться' }}
     </button>
+
   </form>
 </template>
