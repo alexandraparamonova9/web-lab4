@@ -1,4 +1,3 @@
-
 <script setup>
 defineProps({
   mode: {
@@ -10,28 +9,22 @@ defineProps({
     default: false
   }
 })
-
 const emit = defineEmits(['submit'])
-
 function handleSubmit(event) {
   const form = event.target
-
   const data = {
     username: form.username.value,
     password: form.password.value
   }
-
   if (form.elements.namedItem('email')) {
     data.email = form.elements.namedItem('email').value
   }
-
   emit('submit', data)
 }
 </script>
 
 <template>
   <form class="auth-form" @submit.prevent="handleSubmit">
-
     <div class="form-group">
       <label for="username">Логин</label>
       <input
@@ -43,7 +36,6 @@ function handleSubmit(event) {
           required
       />
     </div>
-
     <div v-if="mode === 'register'" class="form-group">
       <label for="email">Email</label>
       <input
@@ -54,7 +46,6 @@ function handleSubmit(event) {
           required
       />
     </div>
-
     <div class="form-group">
       <label for="password">Пароль</label>
       <input
@@ -66,10 +57,8 @@ function handleSubmit(event) {
           required
       />
     </div>
-
     <button class="auth-button" type="submit" :disabled="loading">
       {{ loading ? 'Подождите...' : mode === 'login' ? 'Войти' : 'Зарегистрироваться' }}
     </button>
-
   </form>
 </template>

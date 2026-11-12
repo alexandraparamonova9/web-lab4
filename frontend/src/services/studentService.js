@@ -1,6 +1,5 @@
 import { apiRequest } from './api.js'
 const baseUrl = '/api/students'
-
 export function getStudents(filters = {}, signal) {
   const query = new URLSearchParams()
   for (const [key, value] of Object.entries(filters)) {

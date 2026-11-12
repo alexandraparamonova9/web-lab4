@@ -13,7 +13,7 @@ import { deleteStudent } from '../services/studentService.js'
 const auth = useAuthStore()
 const search = createStudentSearch()
 const students = ref([]), loading = ref(true), error = ref(''), deleting = ref(false)
-const page = ref(0), size = ref(10), totalPages = ref(0), totalElements = ref(0)
+const page = ref(0), size = ref(5), totalPages = ref(0), totalElements = ref(0)
 const sortBy = ref('id'), direction = ref('asc')
 const sortFields = [['id', 'ID'], ['fullName', 'ФИО'], ['groupName', 'Группа'], ['isuId', 'ИСУ ID'], ['dormNumber', 'Общежитие'], ['room', 'Комната'], ['moveInDate', 'Дата заселения'], ['isForeigner', 'Иностранный студент'], ['notes', 'Заметки']]
 let filters = {}, subscription

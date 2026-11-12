@@ -1,6 +1,5 @@
 import { Subject, concat, of, timer, switchMap, map } from 'rxjs'
 const messages = new Subject()
-// Новое сообщение заменяет предыдущее и исчезает через пять секунд.
 export const notifications$ = messages.pipe(
   switchMap(message => concat(of(message), timer(5000).pipe(map(() => null))))
 )

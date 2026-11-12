@@ -9,13 +9,10 @@ import ErrorMessage from '../components/common/ErrorMessage.vue'
 const router = useRouter()
 const auth = useAuthStore()
 const error = ref('')
-
 async function handleLogin(data) {
   error.value = ''
-
   try {
         await auth.login(data.username, data.password)
-
     await router.push('/students')
   } catch (err) {
     error.value = err.message
@@ -26,19 +23,15 @@ async function handleLogin(data) {
 
 <template>
   <div class="auth-page">
-
     <div class="auth-card">
       <h1>Вход в систему</h1>
-
       <AuthForm
           mode="login"
           :loading="auth.loading"
           @submit="handleLogin"
       />
-
       <ErrorMessage :message="error" />
       <AppLoader v-if="auth.loading" />
-
       <div class="auth-link">
         Нет аккаунта?
         <RouterLink to="/register">

@@ -70,21 +70,14 @@ const router = createRouter({
 })
 router.beforeEach((to) => {
     const auth = useAuthStore()
-
-    // Если пользователь не вошёл — отправляем на страницу входа
     if (to.meta.requiresAuth && !auth.isAuthenticated) {
         return '/login'
     }
-
-    // Если у пользователя нет нужной роли — ошибка 403
     if (to.meta.roles && !to.meta.roles.includes(auth.user?.role)) {
         return '/403'
     }
-
-    // Если пользователь уже вошёл, не показываем ему вход и регистрацию
     if (to.meta.guestOnly && auth.isAuthenticated) {
         return '/students'
     }
 })
-
 export default router

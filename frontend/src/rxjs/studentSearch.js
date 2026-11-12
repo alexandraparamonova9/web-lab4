@@ -1,10 +1,8 @@
 import { Subject, Observable, timer, switchMap, startWith, catchError, of } from 'rxjs'
 import { getStudents } from '../services/studentService.js'
-
 export function createStudentSearch() {
   const requests = new Subject()
   const results$ = requests.pipe(
-    // Сразу отменяем старый запрос, затем ждём окончания ввода (debounce).
     switchMap(({ filters, delay }) => timer(delay).pipe(
       switchMap(() => new Observable(subscriber => {
         const controller = new AbortController()

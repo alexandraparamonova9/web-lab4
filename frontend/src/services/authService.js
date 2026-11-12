@@ -1,5 +1,4 @@
 import { apiRequest } from './api.js'
-
 export function login(username, password) {
     return apiRequest('/api/auth/login', {
         method: 'POST',
@@ -12,7 +11,6 @@ export function login(username, password) {
         })
     })
 }
-
 export function register(data) {
     return apiRequest('/api/auth/register', {
         method: 'POST',
@@ -22,7 +20,6 @@ export function register(data) {
         body: JSON.stringify(data)
     })
 }
-
 export async function refreshToken(refreshTokenValue) {
     const response = await fetch('/api/auth/refresh', {
         method: 'POST',
@@ -33,10 +30,8 @@ export async function refreshToken(refreshTokenValue) {
             refreshToken: refreshTokenValue
         })
     })
-
     if (!response.ok) {
         throw new Error('Не удалось обновить токен')
     }
-
     return response.json()
 }

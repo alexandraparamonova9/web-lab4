@@ -1,4 +1,3 @@
-
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -12,7 +11,6 @@ const error = ref('')
 
 async function handleRegister(data) {
   error.value = ''
-
   try {
     await auth.register(data)
     await router.push('/students')
@@ -21,20 +19,16 @@ async function handleRegister(data) {
   }
 }
 </script>
-
 <template>
   <div class="auth-page">
     <h1>Регистрация</h1>
-
     <AuthForm
         mode="register"
         :loading="auth.loading"
         @submit="handleRegister"
     />
-
     <ErrorMessage :message="error" />
     <AppLoader v-if="auth.loading" />
-
     <RouterLink to="/login">
       Уже есть аккаунт? Войти
     </RouterLink>
