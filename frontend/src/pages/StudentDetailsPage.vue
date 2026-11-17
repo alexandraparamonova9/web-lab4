@@ -11,12 +11,14 @@ const route = useRoute(), auth = useAuthStore()
 const student = ref(null), loading = ref(false), error = ref('')
 const fields = [['fullName', 'ФИО'], ['groupName', 'Группа'], ['isuId', 'ИСУ ID'], ['dormNumber', 'Общежитие'], ['room', 'Комната'], ['moveInDate', 'Срок заселения'], ['isForeigner', 'Иностранный студент'], ['notes', 'Заметки']]
 let controller
+
 function display(key) {
   const value = student.value[key]
   if (key === 'isForeigner') return value ? 'Да' : 'Нет'
   if (key === 'moveInDate' && value) return value.split('-').reverse().join('.')
   return value || '—'
 }
+
 async function load(id) {
   controller?.abort()
   const request = new AbortController()
@@ -29,6 +31,9 @@ async function load(id) {
   } catch (err) { if (!request.signal.aborted) error.value = showError(err) }
   finally { if (!request.signal.aborted) loading.value = false }
 }
+
+
+
 watch(() => route.params.id, load, { immediate: true })
 onUnmounted(() => controller?.abort())
 </script>

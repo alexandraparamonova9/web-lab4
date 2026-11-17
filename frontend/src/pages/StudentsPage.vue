@@ -7,23 +7,28 @@ import ErrorMessage from '../components/common/ErrorMessage.vue'
 import StudentFilters from '../components/students/StudentFilters.vue'
 import StudentTable from '../components/students/StudentTable.vue'
 import StudentPagination from '../components/students/StudentPagination.vue'
-import { createStudentSearch } from '../rxjs/studentSearch.js'
-import { showError, showNotification } from '../rxjs/notifications.js'
-import { deleteStudent } from '../services/studentService.js'
+import {createStudentSearch} from '../rxjs/studentSearch.js'
+import {showError,showNotification} from '../rxjs/notifications.js'
+import {deleteStudent} from '../services/studentService.js'
+
+
+const DEFAULT_PAGE_SIZE = 5
 const auth = useAuthStore()
 const search = createStudentSearch()
 const students = ref([]), loading = ref(true), error = ref(''), deleting = ref(false)
-const page = ref(0), size = ref(5), totalPages = ref(0), totalElements = ref(0)
+const page = ref(0), size = ref(DEFAULT_PAGE_SIZE), totalPages = ref(0), totalElements = ref(0)
 const sortBy = ref('id'), direction = ref('asc')
 const sortFields = [['id', 'ID'], ['fullName', 'ФИО'], ['groupName', 'Группа'], ['isuId', 'ИСУ ID'], ['dormNumber', 'Общежитие'], ['room', 'Комната'], ['moveInDate', 'Дата заселения'], ['isForeigner', 'Иностранный студент'], ['notes', 'Заметки']]
 let filters = {}, subscription
 function load(immediate = true) {
   search.search({ ...filters, page: page.value, size: size.value, sortBy: sortBy.value, direction: direction.value }, immediate)
 }
+
 function filterChanged(value, immediate) { filters = value; page.value = 0; load(immediate) }
-function changePage(value) { page.value = value; load() }
-function changeSize(value) { size.value = value; page.value = 0; load() }
+function changePage(value) {page.value = value; load()}
+function changeSize(value) {size.value = value; page.value = 0; load()}
 function sortChanged() { page.value = 0; load() }
+
 async function remove(student) {
   if (!auth.isAdmin || deleting.value || !window.confirm(`Удалить студента «${student.fullName}»?`)) return
   deleting.value = true
@@ -34,6 +39,7 @@ async function remove(student) {
   } catch (err) { error.value = showError(err) }
   finally { deleting.value = false }
 }
+
 onMounted(() => {
   subscription = search.results$.subscribe(result => {
     loading.value = result.loading
@@ -49,6 +55,7 @@ onMounted(() => {
   load()
 })
 onUnmounted(() => { subscription?.unsubscribe(); search.destroy() })
+
 </script>
 <template>
   <AppHeader />

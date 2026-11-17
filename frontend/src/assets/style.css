@@ -576,11 +576,9 @@ button:disabled { opacity: .6; cursor: not-allowed; transform: none; }
     color: white;
     padding: 12px 24px;
 }
-
 .profile-logout:hover {
     background-color: var(--color-primary-dark);
 }
-
 @media (max-width: 480px) {
     .profile-card {
         padding: 20px;

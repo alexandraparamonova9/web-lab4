@@ -2,11 +2,11 @@
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../../stores/authStore.js'
 import '../../assets/style.css'
+import { logout as performLogout } from '../../services/logout.js'
 const auth = useAuthStore()
 const router = useRouter()
 function logout() {
-  auth.logout()
-  router.push('/login')
+  performLogout(auth, router)
 }
 </script>
 <template>

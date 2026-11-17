@@ -12,6 +12,7 @@ const route = useRoute(), router = useRouter(), auth = useAuthStore()
 const editing = computed(() => route.params.id !== undefined)
 const student = ref(null), loading = ref(false), saving = ref(false), error = ref(''), serverErrors = ref({})
 let controller
+
 async function load(id) {
   controller?.abort()
   const request = new AbortController()
@@ -19,6 +20,7 @@ async function load(id) {
   student.value = null; error.value = ''; serverErrors.value = {}; loading.value = false
   if (!editing.value) return
   loading.value = true
+
   try {
     if (!/^[1-9]\d*$/.test(String(id))) throw new Error('Некорректный ID студента.')
     const data = await getStudentById(id, request.signal)
@@ -26,10 +28,12 @@ async function load(id) {
   } catch (err) { if (!request.signal.aborted) error.value = showError(err) }
   finally { if (!request.signal.aborted) loading.value = false }
 }
+
 async function save(data) {
   if (saving.value || !auth.isAdmin) return
   saving.value = true; error.value = ''; serverErrors.value = {}
   try {
+
     if (editing.value) await updateStudent(route.params.id, data)
     else await addStudent(data)
     showNotification('Студент сохранён')
@@ -37,9 +41,13 @@ async function save(data) {
   } catch (err) { error.value = showError(err); serverErrors.value = err.details || {} }
   finally { saving.value = false }
 }
+
 watch(() => route.params.id, load, { immediate: true })
 onUnmounted(() => controller?.abort())
 </script>
+
+
+
 <template>
   <AppHeader />
   <main class="main"><div class="container"><section class="student-form-section">

@@ -1,4 +1,5 @@
 <script setup>
+const PAGE_SIZES = [5, 10, 20, 50]
 defineProps({ page: Number, totalPages: Number, totalElements: Number, size: Number, loading: Boolean })
 defineEmits(['page', 'size'])
 </script>
@@ -9,7 +10,9 @@ defineEmits(['page', 'size'])
     <button class="button button-secondary" :disabled="loading || page + 1 >= totalPages" @click="$emit('page', page + 1)">Далее</button>
     <label class="form-group">На странице
       <select :value="size" :disabled="loading" @change="$emit('size', Number($event.target.value))">
-        <option :value="10">10</option><option :value="20">20</option><option :value="50">50</option>
+        <option v-for="value in PAGE_SIZES" :key="value" :value="value">
+          {{ value }}
+        </option>
       </select>
     </label>
   </nav>

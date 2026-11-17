@@ -1,4 +1,7 @@
 <script setup>
+const MIN_USERNAME_LENGTH = 3
+const MAX_USERNAME_LENGTH = 50
+const MIN_PASSWORD_LENGTH = 8
 defineProps({
   mode: {
     type: String,
@@ -31,8 +34,8 @@ function handleSubmit(event) {
           id="username"
           name="username"
           placeholder="Введите логин"
-          minlength="3"
-          maxlength="50"
+          :minlength="MIN_USERNAME_LENGTH"
+          :maxlength="MAX_USERNAME_LENGTH"
           required
       />
     </div>
@@ -53,7 +56,7 @@ function handleSubmit(event) {
           name="password"
           type="password"
           placeholder="Введите пароль"
-          :minlength="mode === 'register' ? 8 : undefined"
+          :minlength="mode === 'register' ? MIN_PASSWORD_LENGTH : undefined"
           required
       />
     </div>

@@ -1,5 +1,7 @@
 import { Subject, Observable, timer, switchMap, startWith, catchError, of } from 'rxjs'
 import { getStudents } from '../services/studentService.js'
+const SEARCH_DELAY_MS = 350
+
 export function createStudentSearch() {
   const requests = new Subject()
   const results$ = requests.pipe(
@@ -18,7 +20,7 @@ export function createStudentSearch() {
   )
   return {
     results$,
-    search(filters, immediate = false) { requests.next({ filters: { ...filters }, delay: immediate ? 0 : 350 }) },
+    search(filters, immediate = false) { requests.next({ filters: { ...filters }, delay: immediate ? 0 : SEARCH_DELAY_MS }) },
     destroy() { requests.complete() }
   }
 }
