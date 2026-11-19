@@ -1,5 +1,5 @@
 HELP.md
-.env
+../5-1/.env
 .env.*
 !.env.example
 /logs/*.log

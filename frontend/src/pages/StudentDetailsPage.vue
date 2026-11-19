@@ -7,6 +7,7 @@ import AppLoader from '../components/common/AppLoader.vue'
 import ErrorMessage from '../components/common/ErrorMessage.vue'
 import { getStudentById } from '../services/studentService.js'
 import { showError } from '../rxjs/notifications.js'
+const STUDENT_ID_PATTERN = /^[1-9]\d*$/
 const route = useRoute(), auth = useAuthStore()
 const student = ref(null), loading = ref(false), error = ref('')
 const fields = [['fullName', 'ФИО'], ['groupName', 'Группа'], ['isuId', 'ИСУ ID'], ['dormNumber', 'Общежитие'], ['room', 'Комната'], ['moveInDate', 'Срок заселения'], ['isForeigner', 'Иностранный студент'], ['notes', 'Заметки']]
@@ -25,7 +26,8 @@ async function load(id) {
   controller = request
   student.value = null; error.value = ''; loading.value = true
   try {
-    if (!/^[1-9]\d*$/.test(String(id))) throw new Error('Некорректный ID студента.')
+    if (!STUDENT_ID_PATTERN.test(String(id))) {
+      throw new Error('Некорректный ID студента.')}
     const data = await getStudentById(id, request.signal)
     if (!request.signal.aborted) student.value = data
   } catch (err) { if (!request.signal.aborted) error.value = showError(err) }

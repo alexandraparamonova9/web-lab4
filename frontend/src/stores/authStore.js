@@ -32,11 +32,11 @@ export const useAuthStore = defineStore('auth', {
             this.user = getUserFromToken(response.accessToken)
         },
 
-        async login(username, password) {
+        async authenticate(request) {
             this.loading = true
 
             try {
-                const response = await loginRequest(username, password)
+                const response = await request()
                 this.setTokens(response)
                 return response
             } finally {
@@ -44,16 +44,16 @@ export const useAuthStore = defineStore('auth', {
             }
         },
 
-        async register(data) {
-            this.loading = true
+        async login(username, password) {
+            return this.authenticate(
+                () => loginRequest(username, password)
+            )
+        },
 
-            try {
-                const response = await registerRequest(data)
-                this.setTokens(response)
-                return response
-            } finally {
-                this.loading = false
-            }
+        async register(data) {
+            return this.authenticate(
+                () => registerRequest(data)
+            )
         },
 
         async refresh() {

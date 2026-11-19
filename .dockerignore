@@ -3,7 +3,7 @@ target
 .git
 frontend
 *.iml
-.env
+../5-1/.env
 .env.*
 logs
 *.log

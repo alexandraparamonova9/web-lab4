@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: ${DB_USERNAME:?Set DB_USERNAME in .env}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
     ports:
-      - "127.0.0.1:5432:5432"
+      - "127.0.0.1:5433:5432"
     volumes:
       - students-data:/var/lib/postgresql/data
     healthcheck:
@@ -18,7 +18,7 @@ services:
   backend:
     build: .
     ports:
-      - "127.0.0.1:8080:8080"
+      - "127.0.0.1:8081:8080"
     environment:
       DB_URL: jdbc:postgresql://db:5432/students
       DB_USERNAME: ${DB_USERNAME:?Set DB_USERNAME in .env}
@@ -34,6 +34,5 @@ services:
       - "127.0.0.1:5173:80"
     depends_on:
       - backend
-
 volumes:
   students-data:
