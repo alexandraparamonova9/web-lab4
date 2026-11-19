@@ -1,9 +1,0 @@
-services:
-  frontend:
-    build: .
-    ports:
-      - "3000:3000"
-    environment:
-      NUXT_BACKEND_URL: http://host.docker.internal:8080
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
